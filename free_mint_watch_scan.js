@@ -25,7 +25,7 @@ const RPCS = [
 const SELECTORS = new Set(
   'a0712d68|94bf804d|40c10f19|056b01ce|d85d3d27|1249c58b|8ab53447|a4146733|e55fcf2d|5b70ea9f|7c928fe9|fa07ce1d|4db159f5|26308e03|b1aa90a1|c68e45b7|f366afc9|18c99c4e|dac9021f|4e71d92d|379607f5|6ba4c138|1e83409a|48c54b9d|5b88349d|a0e848c7|3335252b|2e7ba6ef|5312df0f|049878f3|be040fb0|db006a75'.split('|')
 );
-const OWN_WALLET = '0x3bc96b2528f686f27b04897bd819bc10d8981b1b';
+const OWN_WALLET = (process.env.FMW_OWN_WALLET || '0x3bc96b2528f686f27b04897bd819bc10d8981b1b').toLowerCase(); // your own wallet: its txs don't count toward the 3-caller threshold
 const MIN_CALLERS = 3;      // distinct wallets before a contract wakes
 const MAX_WINDOW = 120;     // blocks scanned per poll at most
 const PRUNE_AFTER = 7200;   // drop contracts unseen for ~2h of blocks

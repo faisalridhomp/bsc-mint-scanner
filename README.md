@@ -9,18 +9,29 @@ mints on its own.
 
 ## How it works
 
-- `free_mint_watch.sh` — polls new blocks every 60s, keeps state under
-  `state/`, wakes the verifier when a contract crosses the threshold.
 - `free_mint_watch_scan.js` — the block scanner: fetches new blocks,
   decodes transaction input for the mint/claim selectors, counts distinct
-  callers per contract.
+  callers per contract. Prints one JSON line per run:
+  `{"decision":"wake"|"silent","reason":"...","payload":{...}}`.
+  State lives under `~/hooks/state/free_mint_watch/`.
+- `free_mint_watch.sh` — a wrapper for the Muse hook runtime: it sources
+  `$HATCH_HOOK_RUNTIME` and turns the scanner's JSON into a `silent()` or
+  `wake()` call. It is NOT a standalone script — it only runs inside the
+  hook system. It calls the scanner next to itself, so it works both from
+  a repo clone and from `~/hooks/scripts/`.
 
 ## Usage
 
+Standalone (the scanner is plain Node, no dependencies, Node 18+):
+
 ```bash
-bash free_mint_watch.sh
+node free_mint_watch_scan.js
 ```
 
-Runs continuously. When a candidate appears, it prints the contract
-address, the selector, and the caller count — then you verify the contract
-(price 0, mint enabled, supply, eligibility) before minting anything.
+Run it on a schedule (every 60s) to poll new blocks. When a candidate
+appears, it prints the contract address, the selector, and the caller
+count — then you verify the contract (price 0, mint enabled, supply,
+eligibility) before minting anything.
+
+Set `FMW_OWN_WALLET` to your own wallet address so your own transactions
+don't count toward the 3-caller threshold (default is the author's).

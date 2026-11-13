@@ -6,11 +6,15 @@
 set -euo pipefail
 source "$HATCH_HOOK_RUNTIME"
 
+# The scanner lives next to this script (works from a repo clone and from
+# ~/hooks/scripts/ alike).
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 DRY=0
 if [ "${HATCH_HOOK_DRY_RUN:-0}" = "1" ]; then DRY=1; fi
 export FREE_MINT_WATCH_DRY="$DRY"
 
-result=$(/usr/bin/node "$HOME/hooks/scripts/free_mint_watch_scan.js" 2>/tmp/fmw_scan_err.txt) || {
+result=$(/usr/bin/node "$SCRIPT_DIR/free_mint_watch_scan.js" 2>/tmp/fmw_scan_err.txt) || {
   err=$(head -c 300 /tmp/fmw_scan_err.txt 2>/dev/null || true)
   log "scan_error" "$(printf '%s' "$err" | /usr/bin/jq -Rs '{error: .}')"
   silent "scanner error" '{}'
